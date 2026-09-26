@@ -1,0 +1,30 @@
+{
+  "name": "adaptive-learning-dashboard-backend",
+  "version": "1.0.0",
+  "description": "Backend API for the Adaptive Learning Analytics Dashboard (OAU, Part 5, Faculty of CSE)",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "migrate": "node src/models/runMigrations.js",
+    "seed": "node src/models/runSeed.js",
+    "test": "node --test tests/"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "google-auth-library": "^9.11.0",
+    "googleapis": "^140.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "node-cron": "^3.0.3",
+    "pg": "^8.12.0",
+    "redis": "^4.7.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}

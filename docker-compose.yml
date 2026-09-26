@@ -1,0 +1,44 @@
+# Local dev only: brings up Postgres + Redis exactly as specified in Chapter 3.
+# The backend and frontend still run directly on your machine via `npm run dev`
+# (not inside Docker) so VS Code debugging / hot reload works normally.
+#
+# Usage:  docker-compose up -d
+#         docker-compose down          (stop, keep data)
+#         docker-compose down -v       (stop, WIPE data — re-run `npm run migrate && npm run seed` after)
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: aldash-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: adaptive_learning_dashboard
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: aldash-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  redis_data:
