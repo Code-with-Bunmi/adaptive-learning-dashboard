@@ -90,7 +90,7 @@ export default function Login() {
 
         {error && <p className="mt-4 rounded-lg bg-atrisk/10 px-3 py-2 text-sm text-atrisk">{error}</p>}
 
-        {import.meta.env.DEV && (
+        {import.meta.env.VITE_ENABLE_DEV_LOGIN === 'true' && (
           <div className="mt-10 rounded-xl border border-dashed border-ink/20 bg-surface p-5 text-left">
             <p className="label mb-3">Dev-only bypass (no real Google account needed)</p>
             <div className="space-y-1.5">
