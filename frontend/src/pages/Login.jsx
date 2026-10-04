@@ -3,9 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useGoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../hooks/useAuth.jsx';
 
-// Demo accounts created by the seed script (backend/src/models/runSeed.js). Only ever shown
-// when this is a dev build (import.meta.env.DEV) — the underlying /auth/dev-login route is
-// itself hard-404'd outside development regardless, so this is a defense-in-depth pairing.
 const DEV_ACCOUNTS = [
   { role: 'Student', email: 'olowookere.bunmi001@gmail.com', note: 'Sample student — Chapter 3 demo' },
   { role: 'Teacher', email: 'teacher@demo.oau.edu.ng' },
@@ -18,9 +15,6 @@ export default function Login() {
   const { loginWithGoogleCode, loginAsDevUser } = useAuth();
   const navigate = useNavigate();
 
-  // Popup-based "auth code" flow: the browser never sees a password, and this app never sees
-  // one either. Google hands back a one-time `code`; we send that ONE VALUE to our backend,
-  // which exchanges it server-side for tokens and determines role by querying Classroom itself.
   const googleLogin = useGoogleLogin({
     flow: 'auth-code',
     scope: [
@@ -62,36 +56,42 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center px-6">
+    <div
+      className="flex min-h-screen flex-col items-center justify-center px-6"
+      style={{
+        backgroundImage:
+          'linear-gradient(rgba(31,58,95,0.75), rgba(31,58,95,0.75)), url("/hero.jpg")',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
+    >
       <div className="w-full max-w-sm text-center">
-        <span className="mx-auto mb-6 flex h-12 w-12 items-center justify-center rounded-full border-2 border-ink font-display text-xl font-semibold">
-          A
-        </span>
-        <h1 className="font-display text-2xl font-semibold text-ink">
+        <img src="/logo.png" alt="OALD" className="mx-auto mb-6 h-20" />
+        <h1 className="font-display text-2xl font-semibold text-white">
           Adaptive Learning Analytics Dashboard
         </h1>
-        <p className="mt-2 text-sm text-slate-600">
+        <p className="mt-2 text-sm text-white/80">
           Obafemi Awolowo University · Faculty of Computer Science and Engineering
         </p>
 
         <button
           onClick={() => googleLogin()}
           disabled={loading}
-          className="mt-8 flex w-full items-center justify-center gap-3 rounded-full border border-ink/20 bg-surface px-6 py-3 text-sm font-semibold text-ink shadow-card transition hover:border-ink disabled:opacity-60"
+          className="mt-8 flex w-full items-center justify-center gap-3 rounded-full border border-white/30 bg-white px-6 py-3 text-sm font-semibold text-ink shadow-card transition hover:border-white disabled:opacity-60"
         >
           <GoogleIcon />
           {loading ? 'Signing in…' : 'Sign in with Google'}
         </button>
 
-        <p className="mt-3 text-xs text-slate-600">
+        <p className="mt-3 text-xs text-white/80">
           Your role (Student, Teacher, or Admin) is determined automatically from your Google
           Classroom account. We never see or store your Google password.
         </p>
 
-        {error && <p className="mt-4 rounded-lg bg-atrisk/10 px-3 py-2 text-sm text-atrisk">{error}</p>}
+        {error && <p className="mt-4 rounded-lg bg-atrisk/20 px-3 py-2 text-sm text-white">{error}</p>}
 
         {import.meta.env.VITE_ENABLE_DEV_LOGIN === 'true' && (
-          <div className="mt-10 rounded-xl border border-dashed border-ink/20 bg-surface p-5 text-left">
+          <div className="mt-10 rounded-xl border border-dashed border-white/30 bg-white/95 p-5 text-left">
             <p className="label mb-3">Dev-only bypass (no real Google account needed)</p>
             <div className="space-y-1.5">
               {DEV_ACCOUNTS.map((acc) => (

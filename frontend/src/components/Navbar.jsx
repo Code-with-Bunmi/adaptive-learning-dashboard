@@ -12,9 +12,7 @@ export default function Navbar() {
     <header className="sticky top-0 z-30 border-b border-ink/10 bg-paper/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <Link to="/" className="flex items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-ink font-display text-sm font-semibold">
-            A
-          </span>
+          <img src="/logo2.png" alt="OALD" className="h-9" />
           <span className="font-display text-lg font-semibold tracking-tight">
             Adaptive Learning Dashboard
           </span>
