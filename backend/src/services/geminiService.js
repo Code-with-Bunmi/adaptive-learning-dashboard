@@ -4,11 +4,11 @@
  * receives the score AND the breakdown that scoringService already computed, and just writes
  * about it in plain English. Feedback is only generated for 'watch' or 'at_risk' students.
  *
- * Provider: Google Gemini (model: "gemini-3.6-flash", via the official @google/generative-ai SDK.
+ * Provider: Google Gemini (model: "gemini-3.6-flash", via the official @google/genai SDK.
  */
 import crypto from 'crypto';
 import dotenv from 'dotenv';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenAI } from '@google/genai';
 import pool from '../config/db.js';
 import { cache } from '../config/redisClient.js';
 
@@ -18,10 +18,9 @@ const isConfigured = Boolean(process.env.GEMINI_API_KEY);
 const TTL_HOURS = Number(process.env.AI_FEEDBACK_TTL_HOURS || 72);
 const GEMINI_MODEL = 'gemini-3.6-flash';
 
-let geminiModel = null;
+let ai = null;
 if (isConfigured) {
-  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-  geminiModel = genAI.getGenerativeModel({ model: GEMINI_MODEL });
+  ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 }
 
 // Kept as a named, tunable constant per §8 ("Prompt template stored in code").
@@ -99,11 +98,25 @@ export async function getOrGenerateFeedback({ student, course, riskScore }) {
         level: riskScore.level,
         factors,
       });
-      const result = await geminiModel.generateContent({
-        contents: [{ role: 'user', parts: [{ text: prompt }] }],
-        generationConfig: { maxOutputTokens: 300, temperature: 0.7 },
+      const response = await ai.models.generateContent({
+        model: GEMINI_MODEL,
+        contents: prompt,
+        config: { maxOutputTokens: 2048, temperature: 0.7 },
       });
-      content = result.response.text().trim();
+
+      // Log the raw structure (truncated) so we can see finishReason, parts, etc.
+      console.log('[gemini] raw:', JSON.stringify(response).slice(0, 400));
+
+      // Robust extraction: walk candidates[0].content.parts and join all text
+      const parts = response.candidates?.[0]?.content?.parts || [];
+      content = parts.map((p) => p.text || '').join('').trim();
+
+      // Fallback to response.text if parts extraction gave nothing
+      if (!content && typeof response.text === 'string') {
+        content = response.text.trim();
+      }
+
+      console.log('[gemini] parts:', parts.length, '| extracted len:', content.length);
     } catch (err) {
       console.error('Gemini call failed, falling back to template:', err.message);
       content = templateFeedback({ studentName: student.name, level: riskScore.level, factors });
