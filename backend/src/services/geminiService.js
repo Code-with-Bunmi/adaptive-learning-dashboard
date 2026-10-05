@@ -16,7 +16,7 @@ dotenv.config();
 
 const isConfigured = Boolean(process.env.GEMINI_API_KEY);
 const TTL_HOURS = Number(process.env.AI_FEEDBACK_TTL_HOURS || 72);
-const GEMINI_MODEL = 'gemini-3.6-flash';
+const GEMINI_MODEL = 'gemini-2.5-flash';
 
 let ai = null;
 if (isConfigured) {
